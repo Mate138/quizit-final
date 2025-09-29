@@ -1,0 +1,24 @@
+:root {
+  --bg-primary: #fefefe;
+  --bg-secondary: #444;
+  --bg-dot-distance: 70px;
+}
+
+body {
+  background-color: var(--bg-primary);
+  background-image:
+    radial-gradient(var(--bg-secondary) 2px, transparent 1px);
+  background-size: var(--bg-dot-distance) var(--bg-dot-distance);
+
+  animation: diagonalDots 2.5s linear infinite;
+}
+
+@keyframes diagonalDots {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: var(--bg-dot-distance) var(--bg-dot-distance);
+  }
+}

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="styles/dot_paralax.css" />
+
+    <!-- Roboto Google font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="styles/quiz.css" />
+    <link rel="stylesheet" href="styles/info_box.css" />
+    <style>
+      * {
+        font-family: "Roboto";
+      }
+      body {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        height: 100vh;
+        overflow: hidden;
+        margin: 0;
+      }
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 10px;
+        width: 200px;
+        flex-shrink: 0;
+        height: 100vh;
+        background-color: white;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+      .sidebar > .entry {
+        padding: 10px;
+        border-style: none;
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        transition: all;
+        transition-duration: 0.3s;
+        border-style: solid;
+        border-color: rgb(224, 224, 224);
+        border-width: 1px;
+
+        width: 150px;
+      }
+      .sidebar > .entry:hover {
+        border-style: solid;
+        border-width: 1px;
+        border-color: rgb(130, 130, 130);
+      }
+      .sidebar > .entry.selected {
+        border-style: solid;
+        border-width: 1px;
+        border-color: #6e46e5;
+      }
+      .custom-hr {
+        height: 1px;
+        width: 190px;
+        border: none;
+        padding: 0;
+        margin: 0;
+        border-top: 1px solid #e1e1e1;
+      }
+      .header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .header > h1 {
+        margin-bottom: 0.5rem;
+      }
+      .paper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0;
+        min-width: 800px;
+        max-height: 100vh;
+        overflow-y: auto; /* Enable vertical scrolling */
+        padding: 32px;
+        box-sizing: border-box;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+      }
+      .paper::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+      }
+
+      .wrong-answer,
+      .correct-answer {
+        width: 600px;
+      }
+      .paper h2 {
+        text-align: center;
+      }
+
+      #start-test-btn {
+        position: fixed;
+        width: 70px;
+        height: 70px;
+        text-align: center;
+        left: 20px;
+        bottom: 20px;
+        z-index: 1000;
+        padding: 12px 12px;
+        background: #6e46e5;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      #start-test-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+      #start-test-btn:hover {
+        background-color: #481ec6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="header">
+        <h1>My students</h1>
+        <hr class="custom-hr" />
+      </div>
+    </div>
+    <div class="paper"></div>
+    <button id="start-test-btn">Start Test</button>
+    <!-- Info-box element -->
+    <div class="info">
+      <div class="info__icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          viewBox="0 0 24 24"
+          height="24"
+          fill="none"
+        >
+          <path
+            fill="#393a37"
+            d="m12 1.5c-5.79844 0-10.5 4.70156-10.5 10.5 0 5.7984 4.70156 10.5 10.5 10.5 5.7984 0 10.5-4.7016 10.5-10.5 0-5.79844-4.7016-10.5-10.5-10.5zm.75 15.5625c0 .1031-.0844.1875-.1875.1875h-1.125c-.1031 0-.1875-.0844-.1875-.1875v-6.375c0-.1031.0844-.1875.1875-.1875h1.125c.1031 0 .1875.0844.1875.1875zm-.75-8.0625c-.2944-.00601-.5747-.12718-.7808-.3375-.206-.21032-.3215-.49305-.3215-.7875s.1155-.57718.3215-.7875c.2061-.21032.4864-.33149.7808-.3375.2944.00601.5747.12718.7808.3375.206.21032.3215.49305.3215.7875s-.1155.57718-.3215.7875c-.2061.21032-.4864.33149-.7808.3375z"
+          ></path>
+        </svg>
+      </div>
+      <div class="info__title">lorem ipsum dolor sit amet</div>
+      <div class="info__close">
+        <svg
+          height="20"
+          viewBox="0 0 20 20"
+          width="20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m15.8333 5.34166-1.175-1.175-4.6583 4.65834-4.65833-4.65834-1.175 1.175 4.65833 4.65834-4.65833 4.6583 1.175 1.175 4.65833-4.6583 4.6583 4.6583 1.175-1.175-4.6583-4.6583z"
+            fill="#393a37"
+          ></path>
+        </svg>
+      </div>
+    </div>
+    <script type="module">
+      import { alertInfo } from "/scripts/infobox.js";
+      let selectedStudent;
+      const startTestBtn = document.querySelector("#start-test-btn");
+      startTestBtn.addEventListener("click", async () => {
+        await fetch("http://localhost:6767/actions/quiz", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ isActive: true }),
+        });
+      });
+      async function fetchStudents() {
+        const res = await fetch("http://localhost:6767/users");
+        const users = await res.json();
+        const students = users.filter((u) => u.role === "student");
+        return students;
+      }
+      async function fetchAnswers() {
+        const res = await fetch(
+          `http://localhost:6767/answers/${selectedStudent}`
+        );
+        if (res.status == "204") {
+          return null; // no content available = student hasn't taken the test yet
+        }
+        const answers = await res.json();
+        return answers;
+      }
+      document.querySelectorAll(".entry").forEach((entry) => {
+        entry.addEventListener("click", (e) => {
+          document
+            .querySelectorAll(".entry")
+            .forEach((el) => el.classList.remove("selected"));
+          e.target.classList.add("selected");
+          selectedStudent = e.target.id;
+        });
+      });
+
+      function hydrateSidebar(students) {
+        const sidebar = document.querySelector(".sidebar");
+        for (const student of students) {
+          const e_student = `
+        <div class="entry" id="${student.id}">${student.displayName}</div>
+          `;
+          sidebar.insertAdjacentHTML("beforeend", e_student);
+        }
+      }
+      function hydratePaper(answers) {
+        const paper = document.querySelector(".paper");
+        paper.innerHTML = ""; // Clear previous content
+
+        if (!answers || answers.length === 0) {
+          const dv = document.createElement("div");
+          dv.innerHTML = "<h2>No answers available.</h2>";
+          paper.appendChild(dv);
+          return;
+        }
+
+        // You may want to fetch questions to display question text and choices
+        fetch("http://localhost:6767/questions")
+          .then((res) => res.json())
+          .then((questions) => {
+            answers.forEach((ans) => {
+              const q = questions.find((q) => q.id == ans.question_id);
+              if (!q) return;
+
+              const div = document.createElement("div");
+              div.className =
+                ans.userAnswer === ans.correctAnswer
+                  ? "correct-answer"
+                  : "wrong-answer";
+
+              div.innerHTML = `
+          <h3 class="correct-label">${
+            ans.userAnswer === ans.correctAnswer ? "Correct!" : "Incorrect!"
+          }</h3>
+          <h4>${q.question}</h4>
+          <p><strong>Your answer:</strong> ${
+            q.choices[ans.userAnswer] ?? "<i>No answer</i>"
+          }</p>
+          <p><strong>Correct answer:</strong> ${
+            q.choices[ans.correctAnswer]
+          }</p>
+        `;
+              paper.appendChild(div);
+            });
+          });
+      }
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        const students = await fetchStudents();
+        hydrateSidebar(students);
+
+        document
+          .querySelector(".sidebar")
+          .addEventListener("click", async (e) => {
+            if (e.target.classList.contains("entry")) {
+              document
+                .querySelectorAll(".entry")
+                .forEach((el) => el.classList.remove("selected"));
+              e.target.classList.add("selected");
+              selectedStudent = e.target.id;
+              const answers = await fetchAnswers();
+              hydratePaper(answers);
+            }
+          });
+      });
+    </script>
+  </body>
+</html>

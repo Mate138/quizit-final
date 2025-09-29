@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Student Quiz</title>
+    <link rel="stylesheet" href="styles/dot_paralax.css" />
+    <link rel="stylesheet" href="styles/quiz.css" />
+    <link rel="stylesheet" href="styles/info_box.css" />
+    <link rel="icon" href="../assets/favicon.png" type="image/x-icon" />
+  </head>
+  <body>
+    <div id="student-section">
+      <h2>Student Quiz</h2>
+      <div id="timer">40:00</div>
+      <form id="quiz-form">
+        <div id="questions-container"></div>
+        <button type="button" id="btn-submit-quiz">Submit Quiz</button>
+      </form>
+    </div>
+
+    <div id="submit-section" class="hidden">
+      <h2>Quiz Results</h2>
+      <p id="results-text"></p>
+      <div id="wrong-answers-list"></div>
+    </div>
+
+    <audio
+      id="doorbell-sound"
+      src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg"
+      preload="auto"
+    ></audio>
+    <!-- Info-box element -->
+    <div class="info">
+      <div class="info__icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          viewBox="0 0 24 24"
+          height="24"
+          fill="none"
+        >
+          <path
+            fill="#393a37"
+            d="m12 1.5c-5.79844 0-10.5 4.70156-10.5 10.5 0 5.7984 4.70156 10.5 10.5 10.5 5.7984 0 10.5-4.7016 10.5-10.5 0-5.79844-4.7016-10.5-10.5-10.5zm.75 15.5625c0 .1031-.0844.1875-.1875.1875h-1.125c-.1031 0-.1875-.0844-.1875-.1875v-6.375c0-.1031.0844-.1875.1875-.1875h1.125c.1031 0 .1875.0844.1875.1875zm-.75-8.0625c-.2944-.00601-.5747-.12718-.7808-.3375-.206-.21032-.3215-.49305-.3215-.7875s.1155-.57718.3215-.7875c.2061-.21032.4864-.33149.7808-.3375.2944.00601.5747.12718.7808.3375.206.21032.3215.49305.3215.7875s-.1155.57718-.3215.7875c-.2061.21032-.4864.33149-.7808.3375z"
+          ></path>
+        </svg>
+      </div>
+      <div class="info__title">lorem ipsum dolor sit amet</div>
+      <div class="info__close">
+        <svg
+          height="20"
+          viewBox="0 0 20 20"
+          width="20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m15.8333 5.34166-1.175-1.175-4.6583 4.65834-4.65833-4.65834-1.175 1.175 4.65833 4.65834-4.65833 4.6583 1.175 1.175 4.65833-4.6583 4.6583 4.6583 1.175-1.175-4.6583-4.6583z"
+            fill="#393a37"
+          ></path>
+        </svg>
+      </div>
+    </div>
+    <script type="module">
+      import { alertWarn } from "/scripts/infobox.js";
+      let timeLeft;
+      let timerInterval = null;
+      let timesUp = false;
+      let questions;
+
+      async function fetchQuestions() {
+        try {
+          const res = await fetch("http://localhost:6767/questions");
+          questions = await res.json();
+        } catch (err) {
+          console.error("Failed to load questions:", err);
+        }
+      }
+      function showSection() {
+        document.querySelector("#submit-section").classList.remove("hidden");
+        document.querySelector("#student-section").classList.add("hidden");
+      }
+      async function handleSubmitQuiz(forceSubmit = false) {
+        if (
+          !timesUp &&
+          document.querySelectorAll('#quiz-form input[type="radio"]:checked')
+            .length < questions.length
+        ) {
+          alertWarn("Please answer all questions before submitting!");
+          return;
+        }
+        let score = 0;
+        const wrongAnswers = [];
+        const form = document.getElementById("quiz-form");
+        const formData = new FormData(form);
+        const studentAnswers = []; // send this to the backend
+        questions.forEach((q) => {
+          const userAnswer = formData.get(q.id);
+          const correctChoice = q.choices[q.answer];
+          let userAnswerIndex = -1;
+          const checkedRadio = document.querySelector(
+            `input[name="${q.id}"]:checked`
+          );
+          // get user's answer as an index into q.choices
+          if (checkedRadio) {
+            userAnswerIndex = q.choices.findIndex(
+              (choice) => choice === checkedRadio.value
+            );
+          }
+          studentAnswers.push({
+            question_id: q.id,
+            correctAnswer: q.answer,
+            userAnswer: userAnswerIndex,
+          });
+          if (userAnswer === correctChoice) {
+            score++;
+          } else {
+            wrongAnswers.push({
+              question: q.question,
+              yourAnswer: userAnswer ? userAnswer : "<i>No answer</i>",
+              correctAnswer: correctChoice,
+            });
+          }
+        });
+
+        document.getElementById(
+          "results-text"
+        ).textContent = `You scored ${score} out of ${questions.length}`;
+
+        const wrongList = document.getElementById("wrong-answers-list");
+        wrongList.innerHTML = "";
+
+        questions.forEach((q) => {
+          const div = document.createElement("div");
+          const userAnswer = formData.get(q.id);
+
+          const correctChoice = q.choices[q.answer];
+
+          if (userAnswer === correctChoice) {
+            div.className = "correct-answer";
+          } else {
+            div.className = "wrong-answer";
+          }
+
+          div.innerHTML = `
+          <h3 class="correct-label">${
+            userAnswer === correctChoice ? "Correct!" : "Incorrect!"
+          }</h3>
+          <h4>${q.question}</h4>
+          <p><strong>Your answer:</strong> ${
+            userAnswer ? userAnswer : "<i>No answer</i>"
+          }</p>
+          <p><strong>Correct answer:</strong> ${correctChoice}</p>
+        `;
+          wrongList.appendChild(div);
+        });
+
+        if (score === questions.length) {
+          wrongList.innerHTML = `<div class="correct-answer"><p>🎉 Great job! You got all questions right!</p></div>`;
+        }
+
+        showSection("submit-section");
+        stopTimer();
+        const curUser = JSON.parse(localStorage.getItem("CurrentUser"));
+        if (!curUser) {
+          // this should ideally never happen
+          console.error("Failed to access current user's session");
+          return;
+        }
+        await fetch(`http://localhost:6767/answers/${curUser.id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(studentAnswers),
+        });
+        localStorage.removeItem("CurrentUser");
+      }
+      function updateTimer() {
+        const timerEl = document.getElementById("timer");
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+
+        timerEl.textContent = `${String(minutes).padStart(2, "0")}:${String(
+          seconds
+        ).padStart(2, "0")}`;
+
+        if (timeLeft > 0) {
+          timeLeft--;
+        } else {
+          clearInterval(timerInterval);
+          alert("Time is up!");
+          document.getElementById("doorbell-sound").play();
+          timesUp = true;
+          handleSubmitQuiz(true);
+        }
+      }
+
+      function startTimer() {
+        stopTimer();
+        timeLeft = 2*60 + 30;
+        updateTimer();
+        timerInterval = setInterval(updateTimer, 1000);
+      }
+
+      function stopTimer() {
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        const user = JSON.parse(localStorage.getItem("CurrentUser"));
+        if (!user) {
+          window.location.href = "http://localhost:6767/";
+        } else if (user.role != "student") {
+          window.location.href = "http://localhost:6767/";
+        }
+
+        await fetchQuestions();
+
+        function loadStudentQuiz() {
+          const container = document.getElementById("questions-container");
+          container.innerHTML = "";
+
+          questions.forEach((q) => {
+            const questionDiv = document.createElement("div");
+            questionDiv.classList.add("question");
+
+            const questionText = document.createElement("h3");
+            questionText.textContent = q.question;
+            questionDiv.appendChild(questionText);
+
+            q.choices.forEach((choice, index) => {
+              const label = document.createElement("label");
+              label.style.display = "block";
+
+              const input = document.createElement("input");
+              input.type = "radio";
+              input.name = q.id;
+              input.value = choice;
+
+              label.appendChild(input);
+              label.appendChild(document.createTextNode(choice));
+              questionDiv.appendChild(label);
+            });
+
+            container.appendChild(questionDiv);
+          });
+        }
+
+        document
+          .getElementById("btn-submit-quiz")
+          .addEventListener("click", () => handleSubmitQuiz(false));
+
+        loadStudentQuiz();
+        startTimer();
+      });
+    </script>
+  </body>
+</html>

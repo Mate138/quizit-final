@@ -1,0 +1,69 @@
+/* Top-center positioning and pop-out animation */
+.info {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  width: 320px;
+  padding: 12px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: start;
+  border-radius: 8px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+
+  position: fixed;
+  /* fix to viewport */
+  top: 20px;
+  /* distance from top */
+  left: 50%;
+  /* horizontal center */
+  transform: translateX(-50%) translateY(-20px);
+  /* start slightly above for animation */
+  opacity: 0;
+  /* hidden initially */
+  transition: all 0.4s ease;
+  /* smooth pop-in/out */
+  z-index: 1000;
+  /* above everything */
+  pointer-events: none;
+  /* prevents interaction when hidden */
+}
+
+/* Show state */
+.info.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  /* slide down into place */
+  pointer-events: auto;
+  /* allow interaction when visible */
+}
+
+/* Icon styling */
+.info__icon {
+  width: 20px;
+  height: 20px;
+  transform: translateY(-2px);
+  margin-right: 8px;
+}
+
+.info__icon path {
+  fill: #fff;
+}
+
+/* Title text styling */
+.info__title {
+  font-weight: 500;
+  font-size: 14px;
+  color: #fff;
+}
+
+/* Close button styling */
+.info__close {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.info__close path {
+  fill: #fff;
+}

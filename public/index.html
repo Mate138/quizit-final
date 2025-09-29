@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz App! - Log in</title>
+    <link rel="stylesheet" href="styles/log-in.css" />
+    <link rel="stylesheet" href="styles/info_box.css" />
+    <link rel="stylesheet" href="styles/dot_paralax.css" />
+
+    <!-- Roboto Google font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="../assets/favicon.png" type="image/x-icon" />
+  </head>
+  <body>
+    <div class="form">
+      <div class="logo-container">
+        <img
+          src="/assets/logo-long.png"
+          alt="Quiz-it Brand & Logo"
+          width="270px"
+          height="60px"
+        />
+      </div>
+      <p class="form-title">Sign in to your account</p>
+      <div class="input-container">
+        <input placeholder="Enter username" id="input-login-name" type="text" />
+      </div>
+      <div class="input-container">
+        <input
+          placeholder="Enter password"
+          id="input-login-password"
+          type="password"
+        />
+      </div>
+      <button class="submit" id="btn-login-submit">Sign in</button>
+    </div>
+    <!-- Info-box element -->
+    <div class="info">
+      <div class="info__icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          viewBox="0 0 24 24"
+          height="24"
+          fill="none"
+        >
+          <path
+            fill="#393a37"
+            d="m12 1.5c-5.79844 0-10.5 4.70156-10.5 10.5 0 5.7984 4.70156 10.5 10.5 10.5 5.7984 0 10.5-4.7016 10.5-10.5 0-5.79844-4.7016-10.5-10.5-10.5zm.75 15.5625c0 .1031-.0844.1875-.1875.1875h-1.125c-.1031 0-.1875-.0844-.1875-.1875v-6.375c0-.1031.0844-.1875.1875-.1875h1.125c.1031 0 .1875.0844.1875.1875zm-.75-8.0625c-.2944-.00601-.5747-.12718-.7808-.3375-.206-.21032-.3215-.49305-.3215-.7875s.1155-.57718.3215-.7875c.2061-.21032.4864-.33149.7808-.3375.2944.00601.5747.12718.7808.3375.206.21032.3215.49305.3215.7875s-.1155.57718-.3215.7875c-.2061.21032-.4864.33149-.7808.3375z"
+          ></path>
+        </svg>
+      </div>
+      <div class="info__title">lorem ipsum dolor sit amet</div>
+      <div class="info__close">
+        <svg
+          height="20"
+          viewBox="0 0 20 20"
+          width="20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m15.8333 5.34166-1.175-1.175-4.6583 4.65834-4.65833-4.65834-1.175 1.175 4.65833 4.65834-4.65833 4.6583 1.175 1.175 4.65833-4.6583 4.6583 4.6583 1.175-1.175-4.6583-4.6583z"
+            fill="#393a37"
+          ></path>
+        </svg>
+      </div>
+    </div>
+    <script type="module">
+      import { alertInfo, alertWarn } from "/scripts/infobox.js";
+
+      const response = await fetch("http://localhost:6767/users");
+      const users = await response.json();
+      const form = document.getElementById("loginForm");
+
+      const e_submit = document.querySelector("#btn-login-submit");
+      const e_name = document.querySelector("#input-login-name");
+      const e_password = document.querySelector("#input-login-password");
+
+      e_submit.addEventListener("click", async function (event) {
+        const name = e_name.value.trim();
+        const password = e_password.value;
+        let user = users.find((u) => u.name === name);
+
+        // validation
+        if (!user) {
+          alertWarn("User not found.");
+          return;
+        }
+        if (user.password !== password) {
+          alertWarn("Incorrect password.");
+          return;
+        }
+
+        if (user.role === "student") {
+          let response = await fetch("http://localhost:6767/actions/quiz", {
+            method: "GET",
+          });
+          let isActive = (await response.json())["isActive"];
+
+          if (!isActive) {
+            alertInfo("The test hasn't started yet.");
+            return;
+          }
+          if (user.hasDone) {
+            console.log(user);
+            alertInfo("You have already taken the test");
+            return;
+          }
+        }
+        (async () => {
+          await fetch(`http://localhost:6767/users/${user.name}/test-status`, {
+            method: "PATCH",
+          });
+        })();
+        localStorage.setItem("CurrentUser", JSON.stringify(user));
+
+        alertInfo("Redirecting...");
+        setTimeout(() => {
+          window.location.href =
+            user.role === "student" ? "student.html" : "teacher.html";
+        }, 1500);
+      });
+    </script>
+  </body>
+</html>

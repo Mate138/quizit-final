@@ -1,0 +1,42 @@
+[
+    {
+        "id": "0",
+        "name": "bob",
+        "displayName": "Bob",
+        "password": "123",
+        "role": "teacher",
+        "hasDone": false
+    },
+    {
+        "id": "1",
+        "name": "john",
+        "displayName": "John",
+        "password": "1",
+        "role": "student",
+        "hasDone": false
+    },
+    {
+        "id": "2",
+        "name": "james",
+        "displayName": "James",
+        "password": "1",
+        "role": "student",
+        "hasDone": false
+    },
+    {
+        "id": "3",
+        "name": "steve",
+        "displayName": "Steve",
+        "password": "1",
+        "role": "student",
+        "hasDone": false
+    },
+    {
+        "id": "4",
+        "name": "elisa",
+        "displayName": "Elisa",
+        "password": "1",
+        "role": "student",
+        "hasDone": false
+    }
+]
