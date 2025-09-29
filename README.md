@@ -20,3 +20,8 @@ npm i
 npm start
 ```
 4. Open `localhost` in the browser with port 6767
+
+
+# Credits
++ ალექსანდრე ჩინჩალაძე
++ მათე ესაძე
